@@ -45,6 +45,23 @@ parser.add_argument(
 
 args = parser.parse_args()
 
+def formatarNumeros(number, type):
+    
+    if type == "float":
+        number = number.replace(".", "")
+        number = round(float(number.replace(",", ".")), 2)
+        return number
+    
+    elif type == "percentage":
+        number = number.replace("%", "")
+        number = number.replace(".", "")
+        number = round(float(number.replace(",", ".")), 2) / 100
+        return number
+    
+    elif type == "integer":
+        number = int(number.replace(".", ""))
+        return number
+        
 if args.n:
 
     acao_sigla = args.n
@@ -176,22 +193,43 @@ elif args.fiis:
                 
             else:
                 
-                if qtd_column == 3 and qtd_row >= 2:
+                if qtd_row == 1:
                     
-                    formatoDinheiro = workbook.add_format({'num_format': '$#,##'})
-                                
-                    # worksheet.write(qtd_row, qtd_column, cell_format)
-                    worksheet.write_number(3, qtd_column, table_data, formatoDinheiro)    
-                    qtd_column+=1
+                    negrito = workbook.add_format()
+                    negrito.set_bold()
+                    negrito.set_font_size(13)
                     
+                    worksheet.write(qtd_row, qtd_column, table_data, negrito)
+                
+                elif qtd_column in [3, 7, 10, 11] and qtd_row >= 2:
+                    
+                    formatoDinheiro = workbook.add_format({'num_format': '\R$ #,##0.00'})        
+                    worksheet.write(qtd_row, qtd_column, formatarNumeros(table_data, "float"), formatoDinheiro)    
+                
+                elif qtd_column in [6] and qtd_row >=2:
+
+                    formatoDecimal = workbook.add_format({'num_format': '#,##0.00'})        
+                    worksheet.write(qtd_row, qtd_column, formatarNumeros(table_data, "float"), formatoDecimal)    
+                    
+                
+                elif qtd_column in [4, 5, 12, 13] and qtd_row >= 2:
+                
+                    formatoPorcentagem = workbook.add_format({'num_format': '0.00,##%'})
+                    worksheet.write(qtd_row, qtd_column, formatarNumeros(table_data, "percentage"), formatoPorcentagem)    
+                    
+                elif qtd_column in [8, 9] and qtd_row >= 2:
+                
+                    formatoInteiro = workbook.add_format({'num_format': '0'})
+                    worksheet.write(qtd_row, qtd_column, formatarNumeros(table_data, "integer"), formatoInteiro)                    
                     
                 else:
                     worksheet.write(qtd_row, qtd_column, str(table_data))    
                     # worksheet.write(qtd_row, qtd_column, cell_format)
-                    qtd_column+=1    
+
+                qtd_column+=1
                         
                 
-        
+
   
     workbook.close()
         
