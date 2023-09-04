@@ -199,6 +199,8 @@ elif args.fiis:
                     negrito.set_bold()
                     negrito.set_font_size(13)
                     
+                    worksheet.autofilter('B2:N2')
+                    
                     worksheet.write(qtd_row, qtd_column, table_data, negrito)
                 
                 elif qtd_column in [3, 7, 10, 11] and qtd_row >= 2:
