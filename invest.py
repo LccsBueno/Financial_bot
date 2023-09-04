@@ -12,6 +12,7 @@ from selenium.common.exceptions import TimeoutException
 
 options = webdriver.ChromeOptions()
 options.add_experimental_option("detach", True)
+options.add_experimental_option('excludeSwitches', ['enable-logging'])
 options.add_argument('headless')
 
 navegador = webdriver.Chrome(options=options)
@@ -43,8 +44,6 @@ parser.add_argument(
 )
 
 args = parser.parse_args()
-# args = parser.parse_known_args()
-
 
 if args.n:
 
@@ -69,12 +68,10 @@ if args.n:
         print(f'\n Ação: {web_acao_sigla.text} \n Preço: R$ {web_acao_valor.text} \n Empresa: {web_acao_nome.text} \n Dividend Yield: {web_acao_dividendYield.text} \n P/L: {web_acao_pl.text} \n P/VP: {web_acao_pvp.text} \n ROE: {web_acao_roe.text} \n ROIC: {web_acao_roic.text} \n EBIT: R$ {web_acao_ebit.text} \n Lucro Líquido: R$ {web_acao_lucroliquido.text} \n')
 
     except:
-        print("\nNada foi encontrado")
-        
-        
+        print("\nNada foi encontrado")        
+
 elif args.p:
     print("funcionou patrão!!")
-
 
 elif args.acoes:
     print("\n Baixando as informações ... \n")
@@ -140,7 +137,6 @@ elif args.acoes:
     excel_path = "C:/Program Files/Microsoft Office/root\Office16/EXCEL.EXE"
     subprocess.run([excel_path, "C:/Users/lucca/OneDrive - SPTech School/Documents/Planilhas/Investimento/Investimento_acoes.xlsx"])
 
-
 elif args.fiis: 
     print("\n Baixando as informações ... \n")
     
@@ -148,22 +144,19 @@ elif args.fiis:
      
     workbook =xlsxwriter.Workbook('C:/Users/lucca/OneDrive - SPTech School/Documents/Planilhas/Investimento/Investimento_fiis.xlsx')
     worksheet = workbook.add_worksheet("Todos FIIS")
-    
      
+    cell_format = workbook.add_format({'bold': True, 'font_color': 'red'})
+    
     table_data = navegador.execute_script("""
     var table = document.getElementById('tabelaResultado'); 
     var data = [];
     for (var i = 0, row; row = table.rows[i]; i++) {
         var rowData = [];
+ 
+            for (var j = 0, cell; j < 14; j++) {
 
-            for (var j = 0, cell; cell = row.cells[j]; j++) {
-    
-                if(j == 11){
-                    console.log("O que não deu certo, deu onze")
-                }else {
-                    console.log("Passou no else")
-                    rowData.push(cell.textContent);
-                }
+                cell = row.cells[j]
+                rowData.push(cell.textContent);
             }
         
         data.push(rowData);
@@ -177,80 +170,30 @@ elif args.fiis:
         
         for table_data in table_row:
             
-            if qtd_column == 13:
+            if qtd_column == 14:
                 qtd_column = 1
                 qtd_row+=1
+                
             else:
-                try:
+                
+                if qtd_column == 3 and qtd_row >= 2:
                     
-                    worksheet.write_number(qtd_row, qtd_column, int(table_data))
+                    formatoDinheiro = workbook.add_format({'num_format': '$#,##'})
+                                
+                    # worksheet.write(qtd_row, qtd_column, cell_format)
+                    worksheet.write_number(3, qtd_column, table_data, formatoDinheiro)    
+                    qtd_column+=1
                     
-                except: 
                     
+                else:
                     worksheet.write(qtd_row, qtd_column, str(table_data))    
+                    # worksheet.write(qtd_row, qtd_column, cell_format)
                     qtd_column+=1    
-    # row = 0
-    # column = 0
-    # array_auxiliar = []
-
-       
-    # qtd_column = 1
-    # qtd_row = 1
-
-    # array_tabela = []
-    # array_header = []
-
-    # #Qtd_max_row
-    # max_row = 0
-    # while True:
-    #     max_row+=1
+                        
+                
         
-    #     try:
-            
-    #         array_tabela += WebDriverWait(navegador, 4).until(EC.visibility_of_element_located((By.XPATH, (f'//*[@id="tabelaResultado"]/tbody/tr[{max_row}]')))).text
-    #         print(array_tabela)
-            
-    #     except TimeoutException:
-    #         max_row-=1
-    #         break
-        
-    # print(array_tabela)
   
-    # #Qtd_max_column
-    # max_column = 0
-    # while True:
-    #     max_column+=1
-    #     try:
-    #         WebDriverWait(navegador, 4).until(EC.visibility_of_element_located((By.XPATH, (f'//*[@id="tabelaResultado"]/thead/tr/th[{max_column}]/a'))))
-            
-    #     except TimeoutException:
-    #         max_column-=1
-    #         break  
-        
-    # #table head
-    # while qtd_column <= max_column:
-        
-    #     array_header.append(WebDriverWait(navegador, 4).until(EC.visibility_of_element_located((By.XPATH, (f'//*[@id="tabelaResultado"]/thead/tr/th[{qtd_column}]/a')))).text)
-        
-    #     array_tabela=array_header
-    #     qtd_column+=1
-        
-    # qtd_column = 1
-    
-    # #table body
-    # while qtd_row <= max_row:
-    #     array_row = []
-        
-    #     itens = (WebDriverWait(navegador, 5).until(EC.visibility_of_element_located((By.XPATH, (f'//*[@id="tabelaResultado"]/tbody/tr[{qtd_row}]'))))).text
-    #     print(itens)
-
-    
-    #     qtd_row+=1
-        
-                
-                
     workbook.close()
         
     excel_path = "C:/Program Files/Microsoft Office/root\Office16/EXCEL.EXE"
     subprocess.run([excel_path, "C:/Users/lucca/OneDrive - SPTech School/Documents/Planilhas/Investimento/Investimento_fiis.xlsx"])
- 
