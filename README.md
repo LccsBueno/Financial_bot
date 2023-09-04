@@ -1,6 +1,5 @@
-# Financial_bot
-Bot que realiza web-scraping para puxar todos os ativos listados na bolsa, juntamente com todas as informações a estes ativos.
-
+# Financial_bot (em desenvolvimento)
+O objetivo do bot é poder realizar e informar grande parte das coisas que um investidor precisa para comprar e consultar algum ativo listado na bolsa
 ## COMO FUNCIONA ?
 Ele utiliza uma biblioteca do python chamada "argparse" que te permite passar argumentos na própria linha de comando, que levando em conta que estamos mexendo com web-scraping e alguns milhares de registros, nos permite ter uma maior agilidade quando transformando esses dados em planilhas. <br>
 
