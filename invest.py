@@ -94,65 +94,81 @@ elif args.acoes:
     print("\n Baixando as informações ... \n")
     
     navegador.get(f"https://www.fundamentus.com.br/resultado.php")
-    
-    tabela = WebDriverWait(navegador, 10).until(EC.visibility_of_element_located((By.XPATH, ('//*[@id="resultado"]/tbody') )))
-    
-    row = 0
-    column = 0
-    array_auxiliar = []
-    
-    no_column = [4, 6, 7, 8, 9, 11, 12, 13, 14, 18]
-    
-    table_header = ["Papel", "Cotação", "P/L", "P/VP", "PSR", "Div.Yield", "P/Ativo", "P/Cap.Giro", "P/EBIT", "P/Ativ Circ.Liq", "EV/EBIT", "EV/BIT", "Mrg EBIT", "Mrg Liq", "Liq Corr", "ROIC", "ROE", "Liq 2 meses", "Patrim. Liq", "Div Brut/Patrim", "Cresc Rec.5a"]
-    
+        
     workbook =xlsxwriter.Workbook('C:/Users/lucca/OneDrive - SPTech School/Documents/Planilhas/Investimento/Investimento_acoes.xlsx')
     worksheet = workbook.add_worksheet("Todas Ações")
     
-    array_tabela = tabela.text.split("\n")
+    cell_format = workbook.add_format({'bold': True, 'font_color': 'red'})
     
-    for cada_acao in array_tabela:
-        array_auxiliar.append(cada_acao.split(" "))
-        
-    array_tabela = array_auxiliar
-    array_tabela.insert(0, table_header)
-    
-    for table_row in array_tabela:
-        table_row.pop(4)
-        table_row.pop(5)
-        table_row.pop(5)
-        table_row.pop(5)
-        table_row.pop(5)
-        table_row.pop(6)
-        table_row.pop(6)
-        table_row.pop(6)
-        table_row.pop(6)
-        table_row.pop(9)
-            
-    for linha_tabela in array_tabela:    
-        
-        for coluna_tabela in linha_tabela:
-            
-            if column == 11:
-                
-                row+= 1
-                column = 0   
-                        
-            try: 
-                
-                worksheet.write_number(row, column, float(coluna_tabela))
-                column+= 1
-                
-            except: 
-                
-                worksheet.write(row, column, str(coluna_tabela))
-                column+= 1
+    table = navegador.execute_script("""
+    var table = document.getElementById('resultado'); 
+    var data = [];
+    for (var i = 0, row; row = table.rows[i]; i++) {
+        var rowData = [];
+ 
+            for (var j = 0, cell; j < 21; j++) {
 
-    # worksheet.filter_column('B:B', 'x >= 5 and x <= 20')
+                cell = row.cells[j]
+                rowData.push(cell.textContent);
+            }
+        
+        data.push(rowData);
+    }
+    return data;""")
+    
+    qtd_column = 1
+    qtd_row = 1
+
+    for table_row in table:
+        
+        for table_data in table_row:
+            
+            if qtd_column == 21:
+                qtd_column = 1
+                qtd_row+=1
+                
+            else:
+
+                if qtd_row == 1:
+                    
+                    negrito = workbook.add_format()
+                    negrito.set_bold()
+                    negrito.set_font_size(13)
+                    
+                    worksheet.autofilter('B2:N2')
+                    
+                    worksheet.write(qtd_row, qtd_column, table_data, negrito)
+                
+                elif qtd_column in [2, 19] and qtd_row >= 2:
+                    
+                    formatoDinheiro = workbook.add_format({'num_format': '\R$ #,##0.00'})        
+                    worksheet.write(qtd_row, qtd_column, formatarNumeros(table_data, "float"), formatoDinheiro)    
+                
+                elif qtd_column in [3, 4, 5, 7, 8, 9, 10, 11, 12, 15, 18, 20] and qtd_row >=2:
+
+                    formatoDecimal = workbook.add_format({'num_format': '#,##0.00'})        
+                    worksheet.write(qtd_row, qtd_column, formatarNumeros(table_data, "float"), formatoDecimal)    
+                    
+                
+                elif qtd_column in [6, 13, 14, 16, 17, 21] and qtd_row >= 2:
+                
+                    formatoPorcentagem = workbook.add_format({'num_format': '0.00,##%'})
+                    worksheet.write(qtd_row, qtd_column, formatarNumeros(table_data, "percentage"), formatoPorcentagem)    
+             
+                    
+                else:
+                    worksheet.write(qtd_row, qtd_column, str(table_data))    
+                    # worksheet.write(qtd_row, qtd_column, cell_format)
+
+                qtd_column+=1
+
     
     workbook.close()
     
     excel_path = "C:/Program Files/Microsoft Office/root\Office16/EXCEL.EXE"
     subprocess.run([excel_path, "C:/Users/lucca/OneDrive - SPTech School/Documents/Planilhas/Investimento/Investimento_acoes.xlsx"])
+    
+
 
 elif args.fiis: 
     print("\n Baixando as informações ... \n")
@@ -164,7 +180,7 @@ elif args.fiis:
      
     cell_format = workbook.add_format({'bold': True, 'font_color': 'red'})
     
-    table_data = navegador.execute_script("""
+    table = navegador.execute_script("""
     var table = document.getElementById('tabelaResultado'); 
     var data = [];
     for (var i = 0, row; row = table.rows[i]; i++) {
@@ -183,7 +199,7 @@ elif args.fiis:
     qtd_column = 1
     qtd_row = 1
 
-    for table_row in table_data:
+    for table_row in table:
         
         for table_data in table_row:
             
