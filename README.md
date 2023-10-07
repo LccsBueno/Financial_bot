@@ -3,10 +3,8 @@ O objetivo do bot é poder realizar e informar grande parte das coisas que um in
 ## COMO FUNCIONA ?
 Ele utiliza uma biblioteca do python chamada "argparse" que te permite passar argumentos na própria linha de comando, que levando em conta que estamos mexendo com web-scraping e alguns milhares de registros, nos permite ter uma maior agilidade quando transformando esses dados em planilhas. <br>
 
-##COMO INICIAR ?
+## COMO INICIAR ?
 Basta executar o "in.py" que irá carregar um menu onde você poderá escolher a opção desejada.
-
-![image](https://github.com/LccsBueno/Financial_bot/assets/125739142/9c69ddf2-5405-45ba-befe-fb7a06bfb476)
 
 ## PLANOS PARA O FUTURO:
 - Está no planos para o futuro adicionar opções na linha de comando que possam comprar ativos automaticamente (como um trading bot mesmo) para melhor eficiência e agilidade. <br>
