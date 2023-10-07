@@ -35,11 +35,13 @@ parser.add_argument(
 
 parser.add_argument(
     '-acoes',
+    action="store_true",
     help="Baixa todas as ações da bolsa"
 )
 
 parser.add_argument(
     '-fiis',
+    action="store_true",
     help="Baixa todos os fiis da bolsa"
 )
 
@@ -68,7 +70,7 @@ if args.n:
 
     navegador.get(f"https://www.fundamentus.com.br/detalhes.php?papel={acao_sigla}")
 
-    print(f'\nprocurando {acao_sigla} ...')
+    print(f'\n|Procurando {acao_sigla} ...')
     
     try:
         web_acao_valor = WebDriverWait(navegador, 10).until(EC.visibility_of_element_located((By.XPATH, ('/html/body/div[1]/div[2]/table[1]/tbody/tr[1]/td[4]/span') )))
@@ -82,7 +84,18 @@ if args.n:
         web_acao_ebit = WebDriverWait(navegador, 10).until(EC.visibility_of_element_located((By.XPATH, ('/html/body/div[1]/div[2]/table[5]/tbody/tr[4]/td[2]/span') )))
         web_acao_lucroliquido = WebDriverWait(navegador, 10).until(EC.visibility_of_element_located((By.XPATH, ('/html/body/div[1]/div[2]/table[5]/tbody/tr[5]/td[4]/span') )))
 
-        print(f'\n Ação: {web_acao_sigla.text} \n Preço: R$ {web_acao_valor.text} \n Empresa: {web_acao_nome.text} \n Dividend Yield: {web_acao_dividendYield.text} \n P/L: {web_acao_pl.text} \n P/VP: {web_acao_pvp.text} \n ROE: {web_acao_roe.text} \n ROIC: {web_acao_roic.text} \n EBIT: R$ {web_acao_ebit.text} \n Lucro Líquido: R$ {web_acao_lucroliquido.text} \n')
+        print(f"""
+|Sigla: {web_acao_sigla.text}
+|Preço: R$ {web_acao_valor.text} 
+|Empresa: {web_acao_nome.text} 
+|Dividend Yield: {web_acao_dividendYield.text} 
+|P/L: {web_acao_pl.text} 
+|P/VP: {web_acao_pvp.text} 
+|ROE: {web_acao_roe.text} 
+|ROIC: {web_acao_roic.text} 
+|EBIT: R$ {web_acao_ebit.text} 
+|Lucro Líquido: R$ {web_acao_lucroliquido.text} \n
+""")
 
     except:
         print("\nNada foi encontrado")        
@@ -91,7 +104,7 @@ elif args.p:
     print("funcionou patrão!!")
 
 elif args.acoes:
-    print("\n Baixando as informações ... \n")
+    print("\n|Baixando as informações ...")
     
     navegador.get(f"https://www.fundamentus.com.br/resultado.php")
         
@@ -171,7 +184,7 @@ elif args.acoes:
 
 
 elif args.fiis: 
-    print("\n Baixando as informações ... \n")
+    print("\n|Baixando as informações ...")
     
     navegador.get(f"https://www.fundamentus.com.br/fii_resultado.php")
      
@@ -247,8 +260,6 @@ elif args.fiis:
                 qtd_column+=1
                         
                 
-
-  
     workbook.close()
         
     excel_path = "C:/Program Files/Microsoft Office/root\Office16/EXCEL.EXE"
