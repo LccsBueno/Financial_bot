@@ -6,15 +6,7 @@ Ele utiliza uma biblioteca do python chamada "argparse" que te permite passar ar
 ##COMO INICIAR ?
 Basta executar o "in.py" que irá carregar um menu onde você poderá escolher a opção desejada.
 
-*-------------------------*
-|       I N V E S T       |
-*-------------------------*
-| 1-Procurar ação         |
-| 2-Baixar todas ações    |
-| 3-Baixar todos FIIs     |
-| 4-Config                |
-| 5-Sair                  |
-*-------------------------*
+![image](https://github.com/LccsBueno/Financial_bot/assets/125739142/9c69ddf2-5405-45ba-befe-fb7a06bfb476)
 
 ## PLANOS PARA O FUTURO:
 - Está no planos para o futuro adicionar opções na linha de comando que possam comprar ativos automaticamente (como um trading bot mesmo) para melhor eficiência e agilidade. <br>
