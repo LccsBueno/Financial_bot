@@ -17,6 +17,8 @@ options.add_argument('headless')
 
 navegador = webdriver.Chrome(options=options)
 
+caminhoDefault = "."
+
 parser = argparse.ArgumentParser(
     description="Procura o preço da ação hoje no mercado"    
 )
@@ -70,7 +72,7 @@ if args.n:
 
     navegador.get(f"https://www.fundamentus.com.br/detalhes.php?papel={acao_sigla}")
 
-    print(f'\n|Procurando {acao_sigla} ...')
+    print(f'\n    |Procurando {acao_sigla} ...')
     
     try:
         web_acao_valor = WebDriverWait(navegador, 10).until(EC.visibility_of_element_located((By.XPATH, ('/html/body/div[1]/div[2]/table[1]/tbody/tr[1]/td[4]/span') )))
@@ -85,30 +87,32 @@ if args.n:
         web_acao_lucroliquido = WebDriverWait(navegador, 10).until(EC.visibility_of_element_located((By.XPATH, ('/html/body/div[1]/div[2]/table[5]/tbody/tr[5]/td[4]/span') )))
 
         print(f"""
-|Sigla: {web_acao_sigla.text}
-|Preço: R$ {web_acao_valor.text} 
-|Empresa: {web_acao_nome.text} 
-|Dividend Yield: {web_acao_dividendYield.text} 
-|P/L: {web_acao_pl.text} 
-|P/VP: {web_acao_pvp.text} 
-|ROE: {web_acao_roe.text} 
-|ROIC: {web_acao_roic.text} 
-|EBIT: R$ {web_acao_ebit.text} 
-|Lucro Líquido: R$ {web_acao_lucroliquido.text} \n
-""")
+    |Sigla: {web_acao_sigla.text}
+    |Preço: R$ {web_acao_valor.text} 
+    |Empresa: {web_acao_nome.text} 
+    |Dividend Yield: {web_acao_dividendYield.text} 
+    |P/L: {web_acao_pl.text} 
+    |P/VP: {web_acao_pvp.text} 
+    |ROE: {web_acao_roe.text} 
+    |ROIC: {web_acao_roic.text} 
+    |EBIT: R$ {web_acao_ebit.text} 
+    |Lucro Líquido: R$ {web_acao_lucroliquido.text} \n
+    """)
 
     except:
-        print("\nNada foi encontrado")        
+        print("\n    |Nada foi encontrado")        
 
 elif args.p:
     print("funcionou patrão!!")
 
 elif args.acoes:
-    print("\n|Baixando as informações ...")
+    print("\n    |Baixando as informações ...")
     
     navegador.get(f"https://www.fundamentus.com.br/resultado.php")
+    
+    arquivoCaminho = caminhoDefault + "/invest_acoes.xlsx"
         
-    workbook =xlsxwriter.Workbook('C:/Users/lucca/OneDrive - SPTech School/Documents/Planilhas/Investimento/Investimento_acoes.xlsx')
+    workbook =xlsxwriter.Workbook(arquivoCaminho)
     worksheet = workbook.add_worksheet("Todas Ações")
     
     cell_format = workbook.add_format({'bold': True, 'font_color': 'red'})
@@ -179,16 +183,18 @@ elif args.acoes:
     workbook.close()
     
     excel_path = "C:/Program Files/Microsoft Office/root\Office16/EXCEL.EXE"
-    subprocess.run([excel_path, "C:/Users/lucca/OneDrive - SPTech School/Documents/Planilhas/Investimento/Investimento_acoes.xlsx"])
+    subprocess.run([excel_path, arquivoCaminho])
     
 
 
 elif args.fiis: 
-    print("\n|Baixando as informações ...")
+    print("\n    |Baixando as informações ...")
     
     navegador.get(f"https://www.fundamentus.com.br/fii_resultado.php")
      
-    workbook =xlsxwriter.Workbook('C:/Users/lucca/OneDrive - SPTech School/Documents/Planilhas/Investimento/Investimento_fiis.xlsx')
+    arquivoCaminho = caminhoDefault + "/invest_fiis.xlsx" 
+     
+    workbook =xlsxwriter.Workbook(arquivoCaminho)
     worksheet = workbook.add_worksheet("Todos FIIS")
      
     cell_format = workbook.add_format({'bold': True, 'font_color': 'red'})
@@ -263,4 +269,4 @@ elif args.fiis:
     workbook.close()
         
     excel_path = "C:/Program Files/Microsoft Office/root\Office16/EXCEL.EXE"
-    subprocess.run([excel_path, "C:/Users/lucca/OneDrive - SPTech School/Documents/Planilhas/Investimento/Investimento_fiis.xlsx"])
+    subprocess.run([excel_path, arquivoCaminho])
