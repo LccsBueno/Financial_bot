@@ -2,6 +2,7 @@ import argparse
 
 import subprocess
 import xlsxwriter 
+import logging
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -17,7 +18,11 @@ options.add_argument('headless')
 
 navegador = webdriver.Chrome(options=options)
 
+selenium_logger = logging.getLogger('selenium')
+selenium_logger.setLevel(logging.WARNING)
+
 caminhoDefault = "."
+excel_path = r"C:/Program Files/Microsoft Office/root/Office16/EXCEL.EXE"
 
 parser = argparse.ArgumentParser(
     description="Procura o preço da ação hoje no mercado"    
@@ -102,9 +107,6 @@ if args.n:
     except:
         print("\n    |Nada foi encontrado")        
 
-elif args.p:
-    print("funcionou patrão!!")
-
 elif args.acoes:
     print("\n    |Baixando as informações ...")
     
@@ -116,6 +118,11 @@ elif args.acoes:
     worksheet = workbook.add_worksheet("Todas Ações")
     
     cell_format = workbook.add_format({'bold': True, 'font_color': 'red'})
+    
+    formatoDinheiro = workbook.add_format({'num_format': '\\R$ #,##0.00'})        
+    formatoDecimal = workbook.add_format({'num_format': '#,##0.00'})        
+    formatoPorcentagem = workbook.add_format({'num_format': '0.00,##%'})
+    
     
     table = navegador.execute_script("""
     var table = document.getElementById('resultado'); 
@@ -158,18 +165,15 @@ elif args.acoes:
                 
                 elif qtd_column in [2, 19] and qtd_row >= 2:
                     
-                    formatoDinheiro = workbook.add_format({'num_format': '\R$ #,##0.00'})        
                     worksheet.write(qtd_row, qtd_column, formatarNumeros(table_data, "float"), formatoDinheiro)    
                 
                 elif qtd_column in [3, 4, 5, 7, 8, 9, 10, 11, 12, 15, 18, 20] and qtd_row >=2:
 
-                    formatoDecimal = workbook.add_format({'num_format': '#,##0.00'})        
                     worksheet.write(qtd_row, qtd_column, formatarNumeros(table_data, "float"), formatoDecimal)    
                     
                 
                 elif qtd_column in [6, 13, 14, 16, 17, 21] and qtd_row >= 2:
                 
-                    formatoPorcentagem = workbook.add_format({'num_format': '0.00,##%'})
                     worksheet.write(qtd_row, qtd_column, formatarNumeros(table_data, "percentage"), formatoPorcentagem)    
              
                     
@@ -182,7 +186,6 @@ elif args.acoes:
     
     workbook.close()
     
-    excel_path = "C:/Program Files/Microsoft Office/root\Office16/EXCEL.EXE"
     subprocess.run([excel_path, arquivoCaminho])
     
 
@@ -198,6 +201,11 @@ elif args.fiis:
     worksheet = workbook.add_worksheet("Todos FIIS")
      
     cell_format = workbook.add_format({'bold': True, 'font_color': 'red'})
+    
+    formatoDinheiro = workbook.add_format({'num_format': '\\R$ #,##0.00'})        
+    formatoDecimal = workbook.add_format({'num_format': '#,##0.00'})        
+    formatoPorcentagem = workbook.add_format({'num_format': '0.00,##%'})
+    formatoInteiro = workbook.add_format({'num_format': '0'})
     
     table = navegador.execute_script("""
     var table = document.getElementById('tabelaResultado'); 
@@ -240,23 +248,19 @@ elif args.fiis:
                 
                 elif qtd_column in [3, 7, 10, 11] and qtd_row >= 2:
                     
-                    formatoDinheiro = workbook.add_format({'num_format': '\R$ #,##0.00'})        
                     worksheet.write(qtd_row, qtd_column, formatarNumeros(table_data, "float"), formatoDinheiro)    
                 
                 elif qtd_column in [6] and qtd_row >=2:
 
-                    formatoDecimal = workbook.add_format({'num_format': '#,##0.00'})        
                     worksheet.write(qtd_row, qtd_column, formatarNumeros(table_data, "float"), formatoDecimal)    
                     
                 
                 elif qtd_column in [4, 5, 12, 13] and qtd_row >= 2:
                 
-                    formatoPorcentagem = workbook.add_format({'num_format': '0.00,##%'})
                     worksheet.write(qtd_row, qtd_column, formatarNumeros(table_data, "percentage"), formatoPorcentagem)    
                     
                 elif qtd_column in [8, 9] and qtd_row >= 2:
                 
-                    formatoInteiro = workbook.add_format({'num_format': '0'})
                     worksheet.write(qtd_row, qtd_column, formatarNumeros(table_data, "integer"), formatoInteiro)                    
                     
                 else:
@@ -268,5 +272,4 @@ elif args.fiis:
                 
     workbook.close()
         
-    excel_path = "C:/Program Files/Microsoft Office/root\Office16/EXCEL.EXE"
     subprocess.run([excel_path, arquivoCaminho])
