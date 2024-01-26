@@ -4,6 +4,7 @@ import subprocess
 import xlsxwriter 
 import logging
 
+import selenium
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
@@ -51,6 +52,7 @@ parser.add_argument(
     action="store_true",
     help="Baixa todos os fiis da bolsa"
 )
+
 
 args = parser.parse_args()
 
@@ -122,7 +124,6 @@ elif args.acoes:
     formatoDinheiro = workbook.add_format({'num_format': '\\R$ #,##0.00'})        
     formatoDecimal = workbook.add_format({'num_format': '#,##0.00'})        
     formatoPorcentagem = workbook.add_format({'num_format': '0.00,##%'})
-    
     
     table = navegador.execute_script("""
     var table = document.getElementById('resultado'); 

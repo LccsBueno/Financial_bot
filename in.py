@@ -1,6 +1,15 @@
 import importlib
 import subprocess
 
+import scrappers
+from scrappers import stocksCollector
+
+import scrappers
+from scrappers import fiisCollector
+
+import scrappers
+from scrappers import stocksShower
+
 
 sair = False
 
@@ -38,6 +47,7 @@ def configs():
     |Escolha uma: """))
             
         if userInput == 5:
+            
             return
         
         elif userInput == 1:
@@ -78,8 +88,7 @@ def main():
             exit()
             
         elif userInput == 2:
-            script = ["python", "./invest.py", "-acoes"]
-            subprocess.call(script)
+            stocksCollector.StocksCollector()
                  
         elif userInput == 3:
             script = ["python", "./invest.py", "-fiis"]
