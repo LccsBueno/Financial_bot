@@ -1,10 +1,11 @@
 import xlsxwriter
 import subprocess
-import dataFormatter
-from dataFormatter import DataFormatter
+
+from .dataFormatter import DataFormatter
 
 
 class SheetFormatter:
+
 
     def __init__(self,
                  generatedSheetPath,
@@ -16,13 +17,17 @@ class SheetFormatter:
         self.generatedSheetPath = generatedSheetPath
         self.currencyColumns = currencyColumns
         self.decimalColumns = decimalColumns
-        self.percentageColumns = percentageColumns
+        self.percentageColumns = percentageColumns 
+        
+        self.workbook = xlsxwriter.Workbook(self.generatedSheetPath)
+        self.worksheet = self.workbook.add_worksheet("Todas Ações")     
     
     def sheetGenerator(self, data):
 
-        workbook =xlsxwriter.Workbook(self.generatedSheetPath)
-        worksheet = workbook.add_worksheet("Todas Ações")
-
+        currency = self.workbook.add_format({'num_format': '\\R$ #,##0.00'})        
+        decimal = self.workbook.add_format({'num_format': '#,##0.00'})        
+        percentage = self.workbook.add_format({'num_format': '0.00,##%'})
+   
         qtd_column = 1
         qtd_row = 1
 
@@ -38,35 +43,37 @@ class SheetFormatter:
 
                     if qtd_row == 1:
                         
-                        negrito = workbook.add_format()
-                        negrito.set_bold()
-                        negrito.set_font_size(13)
+                        bold = self.workbook.add_format()
+                        bold.set_bold()
+                        bold.set_font_size(13)
                         
-                        worksheet.autofilter('B2:N2')
+                        self.worksheet.autofilter('B2:N2')
                         
-                        worksheet.write(qtd_row, qtd_column, table_data, negrito)
+                        self.worksheet.write(qtd_row, qtd_column, table_data, bold)
                     
                     elif qtd_column in self.currencyColumns and qtd_row >= 2:
                         
-                        worksheet.write(qtd_row, qtd_column, formatarNumeros(table_data, "float"), formatoDinheiro)    
+                        self.worksheet.write(qtd_row, qtd_column, DataFormatter.formatDataToInteger(table_data), currency)    
+                    
                     
                     elif qtd_column in self.decimalColumns and qtd_row >=2:
 
-                        worksheet.write(qtd_row, qtd_column, formatarNumeros(table_data, "float"), formatoDecimal)    
+                        self.worksheet.write(qtd_row, qtd_column, DataFormatter.formatDataToInteger(table_data), decimal)    
                         
                     
                     elif qtd_column in self.percentageColumns and qtd_row >= 2:
                     
-                        worksheet.write(qtd_row, qtd_column, formatarNumeros(table_data, "percentage"), formatoPorcentagem)    
+                        self.worksheet.write(qtd_row, qtd_column, DataFormatter.formatDataToInteger(table_data), percentage)    
                 
                         
                     else:
-                        worksheet.write(qtd_row, qtd_column, str(table_data))    
+                        self.worksheet.write(qtd_row, qtd_column, str(table_data))    
                         # worksheet.write(qtd_row, qtd_column, cell_format)
 
                     qtd_column+=1
 
         
-        workbook.close()
+        self.workbook.close()
         
         subprocess.run([self.excel_path, self.generatedSheetPath])
+        

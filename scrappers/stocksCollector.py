@@ -1,13 +1,10 @@
-import webAcess
-from webAcess import WebAcess
+from .webAcess import WebAcess
 
 import formatters 
 from formatters import sheetFormatter
-sheetFormatter.SheetFormatter 
 
 
-
-class StocksCollector(WebAcess):
+class StocksCollector():
 
     def scrap():
     

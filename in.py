@@ -53,8 +53,7 @@ def configs():
         elif userInput == 1:
             caminhoConfigurado = input("""
     |Caminho absoluto: """)
-            
-            
+                       
 def main():
 
     while not sair:
@@ -97,8 +96,6 @@ def main():
         elif userInput == 4:
             configs()
         
-
-    
 main()    
 
     
