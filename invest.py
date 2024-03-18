@@ -2,7 +2,9 @@ import argparse
 
 import subprocess
 import xlsxwriter 
+import logging
 
+import selenium
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
@@ -16,6 +18,12 @@ options.add_experimental_option('excludeSwitches', ['enable-logging'])
 options.add_argument('headless')
 
 navegador = webdriver.Chrome(options=options)
+
+selenium_logger = logging.getLogger('selenium')
+selenium_logger.setLevel(logging.WARNING)
+
+caminhoDefault = "."
+excel_path = r"C:/Program Files/Microsoft Office/root/Office16/EXCEL.EXE"
 
 parser = argparse.ArgumentParser(
     description="Procura o preço da ação hoje no mercado"    
@@ -45,6 +53,7 @@ parser.add_argument(
     help="Baixa todos os fiis da bolsa"
 )
 
+
 args = parser.parse_args()
 
 def formatarNumeros(number, type):
@@ -70,7 +79,7 @@ if args.n:
 
     navegador.get(f"https://www.fundamentus.com.br/detalhes.php?papel={acao_sigla}")
 
-    print(f'\n|Procurando {acao_sigla} ...')
+    print(f'\n    |Procurando {acao_sigla} ...')
     
     try:
         web_acao_valor = WebDriverWait(navegador, 10).until(EC.visibility_of_element_located((By.XPATH, ('/html/body/div[1]/div[2]/table[1]/tbody/tr[1]/td[4]/span') )))
@@ -85,33 +94,36 @@ if args.n:
         web_acao_lucroliquido = WebDriverWait(navegador, 10).until(EC.visibility_of_element_located((By.XPATH, ('/html/body/div[1]/div[2]/table[5]/tbody/tr[5]/td[4]/span') )))
 
         print(f"""
-|Sigla: {web_acao_sigla.text}
-|Preço: R$ {web_acao_valor.text} 
-|Empresa: {web_acao_nome.text} 
-|Dividend Yield: {web_acao_dividendYield.text} 
-|P/L: {web_acao_pl.text} 
-|P/VP: {web_acao_pvp.text} 
-|ROE: {web_acao_roe.text} 
-|ROIC: {web_acao_roic.text} 
-|EBIT: R$ {web_acao_ebit.text} 
-|Lucro Líquido: R$ {web_acao_lucroliquido.text} \n
-""")
+    |Sigla: {web_acao_sigla.text}
+    |Preço: R$ {web_acao_valor.text} 
+    |Empresa: {web_acao_nome.text} 
+    |Dividend Yield: {web_acao_dividendYield.text} 
+    |P/L: {web_acao_pl.text} 
+    |P/VP: {web_acao_pvp.text} 
+    |ROE: {web_acao_roe.text} 
+    |ROIC: {web_acao_roic.text} 
+    |EBIT: R$ {web_acao_ebit.text} 
+    |Lucro Líquido: R$ {web_acao_lucroliquido.text} \n
+    """)
 
     except:
-        print("\nNada foi encontrado")        
-
-elif args.p:
-    print("funcionou patrão!!")
+        print("\n    |Nada foi encontrado")        
 
 elif args.acoes:
-    print("\n|Baixando as informações ...")
+    print("\n    |Baixando as informações ...")
     
     navegador.get(f"https://www.fundamentus.com.br/resultado.php")
+    
+    arquivoCaminho = caminhoDefault + "/invest_acoes.xlsx"
         
-    workbook =xlsxwriter.Workbook('C:/Users/lucca/OneDrive - SPTech School/Documents/Planilhas/Investimento/Investimento_acoes.xlsx')
+    workbook =xlsxwriter.Workbook(arquivoCaminho)
     worksheet = workbook.add_worksheet("Todas Ações")
     
     cell_format = workbook.add_format({'bold': True, 'font_color': 'red'})
+    
+    formatoDinheiro = workbook.add_format({'num_format': '\\R$ #,##0.00'})        
+    formatoDecimal = workbook.add_format({'num_format': '#,##0.00'})        
+    formatoPorcentagem = workbook.add_format({'num_format': '0.00,##%'})
     
     table = navegador.execute_script("""
     var table = document.getElementById('resultado'); 
@@ -154,18 +166,15 @@ elif args.acoes:
                 
                 elif qtd_column in [2, 19] and qtd_row >= 2:
                     
-                    formatoDinheiro = workbook.add_format({'num_format': '\R$ #,##0.00'})        
                     worksheet.write(qtd_row, qtd_column, formatarNumeros(table_data, "float"), formatoDinheiro)    
                 
                 elif qtd_column in [3, 4, 5, 7, 8, 9, 10, 11, 12, 15, 18, 20] and qtd_row >=2:
 
-                    formatoDecimal = workbook.add_format({'num_format': '#,##0.00'})        
                     worksheet.write(qtd_row, qtd_column, formatarNumeros(table_data, "float"), formatoDecimal)    
                     
                 
                 elif qtd_column in [6, 13, 14, 16, 17, 21] and qtd_row >= 2:
                 
-                    formatoPorcentagem = workbook.add_format({'num_format': '0.00,##%'})
                     worksheet.write(qtd_row, qtd_column, formatarNumeros(table_data, "percentage"), formatoPorcentagem)    
              
                     
@@ -178,20 +187,26 @@ elif args.acoes:
     
     workbook.close()
     
-    excel_path = "C:/Program Files/Microsoft Office/root\Office16/EXCEL.EXE"
-    subprocess.run([excel_path, "C:/Users/lucca/OneDrive - SPTech School/Documents/Planilhas/Investimento/Investimento_acoes.xlsx"])
+    subprocess.run([excel_path, arquivoCaminho])
     
 
 
 elif args.fiis: 
-    print("\n|Baixando as informações ...")
+    print("\n    |Baixando as informações ...")
     
     navegador.get(f"https://www.fundamentus.com.br/fii_resultado.php")
      
-    workbook =xlsxwriter.Workbook('C:/Users/lucca/OneDrive - SPTech School/Documents/Planilhas/Investimento/Investimento_fiis.xlsx')
+    arquivoCaminho = caminhoDefault + "/invest_fiis.xlsx" 
+     
+    workbook =xlsxwriter.Workbook(arquivoCaminho)
     worksheet = workbook.add_worksheet("Todos FIIS")
      
     cell_format = workbook.add_format({'bold': True, 'font_color': 'red'})
+    
+    formatoDinheiro = workbook.add_format({'num_format': '\\R$ #,##0.00'})        
+    formatoDecimal = workbook.add_format({'num_format': '#,##0.00'})        
+    formatoPorcentagem = workbook.add_format({'num_format': '0.00,##%'})
+    formatoInteiro = workbook.add_format({'num_format': '0'})
     
     table = navegador.execute_script("""
     var table = document.getElementById('tabelaResultado'); 
@@ -234,23 +249,19 @@ elif args.fiis:
                 
                 elif qtd_column in [3, 7, 10, 11] and qtd_row >= 2:
                     
-                    formatoDinheiro = workbook.add_format({'num_format': '\R$ #,##0.00'})        
                     worksheet.write(qtd_row, qtd_column, formatarNumeros(table_data, "float"), formatoDinheiro)    
                 
                 elif qtd_column in [6] and qtd_row >=2:
 
-                    formatoDecimal = workbook.add_format({'num_format': '#,##0.00'})        
                     worksheet.write(qtd_row, qtd_column, formatarNumeros(table_data, "float"), formatoDecimal)    
                     
                 
                 elif qtd_column in [4, 5, 12, 13] and qtd_row >= 2:
                 
-                    formatoPorcentagem = workbook.add_format({'num_format': '0.00,##%'})
                     worksheet.write(qtd_row, qtd_column, formatarNumeros(table_data, "percentage"), formatoPorcentagem)    
                     
                 elif qtd_column in [8, 9] and qtd_row >= 2:
                 
-                    formatoInteiro = workbook.add_format({'num_format': '0'})
                     worksheet.write(qtd_row, qtd_column, formatarNumeros(table_data, "integer"), formatoInteiro)                    
                     
                 else:
@@ -262,5 +273,4 @@ elif args.fiis:
                 
     workbook.close()
         
-    excel_path = "C:/Program Files/Microsoft Office/root\Office16/EXCEL.EXE"
-    subprocess.run([excel_path, "C:/Users/lucca/OneDrive - SPTech School/Documents/Planilhas/Investimento/Investimento_fiis.xlsx"])
+    subprocess.run([excel_path, arquivoCaminho])
