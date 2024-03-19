@@ -9,6 +9,7 @@ from formatters import dataFormatter
 from formatters import sheetFormatter
 
 from scrappers.stocksCollector import StocksCollector as stock
+import MenuOptions 
 
 
 sair = False
@@ -34,17 +35,7 @@ def configs():
     
     while True:
         
-        userInput = int(input("""
-    *-------------------------*
-    |      CONFIGURAÇÕES      |
-    *-------------------------*
-    | 1-Caminho da planilha   |
-    |                         |
-    |                         |
-    |                         |
-    | 5-Voltar                |
-    *-------------------------*
-    |Escolha uma: """))
+        userInput = MenuOptions.menuOpcoes()
             
         if userInput == 5:
             
@@ -58,29 +49,14 @@ def main():
 
     while not sair:
 
-        userInput = int(input("""
-    *-------------------------*
-    |       I N V E S T       |
-    *-------------------------*
-    | 1-Procurar ação         |
-    | 2-Baixar todas ações    |
-    | 3-Baixar todos FIIs     |
-    | 4-Config                |
-    | 5-Sair                  |
-    *-------------------------*
-    |Escolha uma: """))
+        userInput = MenuOptions.menuOpcoes()
         
         if userInput == 5:
-            print("""
-    *-------------------------*
-    |      Volte sempre!      |
-    *-------------------------*
-        """)
+            MenuOptions.volteSempre()
             break
         
         elif userInput == 1:
-            acaoInput = input("""
-    |Sigla do ativo: """)
+            acaoInput = MenuOptions.siglaAtivo()
             comando = "-n" 
             script = ["python", "./invest.py", comando, acaoInput]
             subprocess.call(script)
