@@ -3,13 +3,13 @@ import subprocess
 
 from scrappers import stocksCollector
 
-from scrappers import fiisCollector
+from scrappers.fiisCollector import FiisCollector as fiis
 
 from formatters import dataFormatter
 from formatters import sheetFormatter
 
 from scrappers.stocksCollector import StocksCollector as stock
-import MenuOptions 
+from MenuOptions import MenuOptions
 
 
 sair = False
@@ -20,11 +20,14 @@ def checarBiblitecas(bibliotecas):
     for lib in bibliotecas:
         try:
             importlib.import_module(lib)
+            
         except ImportError:
             print(f"Instalando {lib} ...")
+            
             try:
                 subprocess.check_call(["pip", "install", lib])
                 print(f"{lib} instalado com sucesso!!")
+                
             except subprocess.CalledProcessError:
                 print(f"Não foi possível instalar {lib}, por favor instale manualmente")
                 return
@@ -35,7 +38,7 @@ def configs():
     
     while True:
         
-        userInput = MenuOptions.menuOpcoes()
+        userInput = MenuOptions.configuracoes()
             
         if userInput == 5:
             
@@ -49,7 +52,7 @@ def main():
 
     while not sair:
 
-        userInput = MenuOptions.menuOpcoes()
+        userInput = MenuOptions.menuPrincipal()
         
         if userInput == 5:
             MenuOptions.volteSempre()
@@ -67,7 +70,7 @@ def main():
             
                  
         elif userInput == 3:
-            pass
+            fiis.scrap()
             
         elif userInput == 4:
             configs()

@@ -25,3 +25,4 @@ class DataFormatter:
         string = str(data)
         return string
     
+    
