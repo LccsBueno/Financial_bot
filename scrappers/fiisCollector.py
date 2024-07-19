@@ -1,5 +1,6 @@
 from formatters import sheetFormatter
-from . import webAcess 
+from . import webAcess
+import datetime
 
 class FiisCollector(webAcess.WebAcess):
     
@@ -25,8 +26,10 @@ class FiisCollector(webAcess.WebAcess):
                 data.push(rowData);
             }
             return data;""")
+        
+        now = datetime.datetime.now()
 
-        sht = sheetFormatter.SheetFormatter("./Fiis.xlsx",
+        sht = sheetFormatter.SheetFormatter("./Fiis-"+str(now.month)+"-"+str(now.day)+"-"+str(now.year)+".xlsx",
                                             qtd_columns, 
                                             [3, 7, 10, 11],
                                             [6],
@@ -34,4 +37,4 @@ class FiisCollector(webAcess.WebAcess):
                                             integerColumn = [8, 9])
 
         sht.sheetGenerator(data)
-        return
+    

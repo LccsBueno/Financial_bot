@@ -1,17 +1,19 @@
 import xlsxwriter
 import subprocess
+import datetime
 
 from . import dataFormatter as dt
 
 class SheetFormatter: 
     
-    def __init__(self,
-                generatedSheetPath,
-                qtd_columns,
-                currencyColumns,
-                decimalColumns,
-                percentageColumns,
-                **kwargs):
+    def __init__(
+            self,
+            generatedSheetPath,
+            qtd_columns,
+            currencyColumns,
+            decimalColumns,
+            percentageColumns,
+            **kwargs):
             
         self.excel_path = r"C:/Program Files/Microsoft Office/root/Office16/EXCEL.EXE"
         self.generatedSheetPath = generatedSheetPath
@@ -22,7 +24,9 @@ class SheetFormatter:
         self.integerColumns = kwargs.get("integerColumn")
         
         self.workbook = xlsxwriter.Workbook(self.generatedSheetPath)
-        self.worksheet = self.workbook.add_worksheet("Ativos") 
+        
+        now = datetime.datetime.now()
+        self.worksheet = self.workbook.add_worksheet("FIIS") 
     
     def sheetGenerator(self, data):
         

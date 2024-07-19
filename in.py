@@ -9,7 +9,7 @@ from formatters import dataFormatter
 from formatters import sheetFormatter
 
 from scrappers.stocksCollector import StocksCollector as stock
-from MenuOptions import MenuOptions
+from MenuOptions import MenuOptions#
 
 
 sair = False
@@ -21,7 +21,7 @@ def checarBiblitecas(bibliotecas):
         try:
             importlib.import_module(lib)
             
-        except ImportError:
+        except ImportError or ModuleNotFoundError:
             print(f"Instalando {lib} ...")
             
             try:
@@ -31,6 +31,8 @@ def checarBiblitecas(bibliotecas):
             except subprocess.CalledProcessError:
                 print(f"Não foi possível instalar {lib}, por favor instale manualmente")
                 return
+            
+
             
 checarBiblitecas(libsUsadas)
 
