@@ -22,8 +22,7 @@ class SheetFormatter:
         self.percentageColumns = kwargs.get("percentageColumns")
         
         self.workbook = xlsxwriter.Workbook(self.generatedSheetPath)
-        
-        now = datetime.datetime.now()
+
         self.worksheet = self.workbook.add_worksheet("FIIS") 
     
     def sheetGenerator(self, data):
@@ -35,6 +34,10 @@ class SheetFormatter:
         
         qtd_column = 1
         qtd_row = 1
+        print("Aqui")
+        print(self.percentageColumns)
+        print(self.currencyColumns)
+        print(self.decimalColumns)
         
         if self.integerColumns == None: 
             self.integerColumns = [0]
@@ -70,7 +73,7 @@ class SheetFormatter:
 
                     
                     elif qtd_column in self.currencyColumns and qtd_row >= 2:
-                        
+                        print("Entrou aqui")
                         self.worksheet.write(qtd_row, qtd_column, dt.DataFormatter.formatDataToFloat(table_data), currency)    
                     
                     

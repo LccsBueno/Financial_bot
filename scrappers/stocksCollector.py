@@ -1,5 +1,6 @@
 from formatters import sheetFormatter
 from . import webAcess 
+import datetime
 
 class StocksCollector(webAcess.WebAcess):
     
@@ -7,8 +8,6 @@ class StocksCollector(webAcess.WebAcess):
     def scrap():
     
         StocksCollector.navegador.get(f"https://www.fundamentus.com.br/resultado.php")
-
-        qtd_columns = 21
         
         data = StocksCollector.navegador.execute_script("""
         var table = document.getElementById('resultado'); 
@@ -26,11 +25,20 @@ class StocksCollector(webAcess.WebAcess):
         }
         return data;""")
                
-        sht = sheetFormatter.SheetFormatter("./Stocks.xlsx", 
-                                            qtd_columns,
-                                            [2, 19],
-                                            [3, 4, 5, 7, 8, 9, 10, 11, 12, 15, 18, 20], 
-                                            [6, 13, 14, 16, 17, 21])
+        currencyColumns = [2, 19]
+        decimalColumns = [3, 4, 5, 7, 8, 9, 10, 11, 12, 15, 18, 20]
+        percentageColumns = [6, 13, 14, 16, 17, 21]
+        integerColumn = [0]
+               
+        print(currencyColumns)
+        now = datetime.datetime.now()
+               
+        sht = sheetFormatter.SheetFormatter("./Stocks-"+str(now.month)+"-"+str(now.day)+"-"+str(now.year)+".xlsx", 
+                                            len(data[0]),
+                                            currencyColumns = currencyColumns,
+                                            decimalColumns = decimalColumns,
+                                            percentageColumns = percentageColumns,
+                                            )
         sht.sheetGenerator(data)
     
 
