@@ -36,6 +36,20 @@ class MenuOptions:
     |      Volte sempre!      |
     *-------------------------*
         """)
+        
+    @staticmethod
+    def opcoesFiis():
+        return int(input("""
+    *-------------------------*
+    |  CONFIGURAÇÕES - FIIS   |
+    *-------------------------*
+    | 1-Exibir Colunas        |
+    | 2-Adicionar Coluna      |                        
+    | 3-Editar Coluna         |
+    | 4-Prosseguir            |
+    *-------------------------*
+    |Escolha uma: """))
+        
 
     @staticmethod
     def siglaAtivo():

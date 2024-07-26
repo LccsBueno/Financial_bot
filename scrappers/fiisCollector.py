@@ -8,8 +8,6 @@ class FiisCollector(webAcess.WebAcess):
     def scrap():
     
         FiisCollector.navegador.get(f"https://www.fundamentus.com.br/fii_resultado.php")
-
-        qtd_columns = 14
         
         data = FiisCollector.navegador.execute_script("""
         var table = document.getElementById('tabelaResultado'); 
@@ -27,14 +25,48 @@ class FiisCollector(webAcess.WebAcess):
             }
             return data;""")
         
+        # ESPERAR UMA ENTRADA DO USUARIO PARA MOSTRAR AS COLUNAS E PEDIR CONFIRMACAO NO TIPO DELAS
+        
+        currencyColumns = [3, 7, 10, 11]
+        decimalColumns = [6]
+        percentageColumns = [4, 5, 12, 13]
+        integerColumns = [8, 9]
+        
         now = datetime.datetime.now()
 
         sht = sheetFormatter.SheetFormatter("./Fiis-"+str(now.month)+"-"+str(now.day)+"-"+str(now.year)+".xlsx",
-                                            qtd_columns, 
-                                            [3, 7, 10, 11],
-                                            [6],
-                                            [4, 5, 12, 13],
-                                            integerColumn = [8, 9])
+                                            len(data[0]), 
+                                            currencyColumns = currencyColumns,
+                                            decimalColumns = decimalColumns,
+                                            percentageColumns = percentageColumns,
+                                            integerColumn = integerColumns
+                                            )
 
+        # cont=1
+        # string = " {posicao:6} | {coluna:18} | {tipoColuna:12}"
+        
+        # print(string.format(posicao="Nº Col", coluna="Nome Col", tipoColuna="Tipo Col"))
+        # print("---------------------------------------")
+            
+        # for i in data[0]:
+            
+        #     if cont in currencyColumns:
+        #         print(string.format(posicao=cont, coluna=i, tipoColuna="Monetário"))
+            
+        #     elif cont in decimalColumns:
+        #         print(string.format(posicao=cont, coluna=i, tipoColuna="Decimal"))
+                
+        #     elif cont in percentageColumns:
+        #         print(string.format(posicao=cont, coluna=i, tipoColuna="Porcentagem"))
+                
+        #     elif cont in integerColumns:
+        #         print(string.format(posicao=cont, coluna=i, tipoColuna="Inteiro"))
+            
+        #     else:
+        #         print(string.format(posicao=cont, coluna=i, tipoColuna="Texto"))
+            
+        #     cont+=1
+                    
+            
         sht.sheetGenerator(data)
     

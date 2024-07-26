@@ -10,18 +10,16 @@ class SheetFormatter:
             self,
             generatedSheetPath,
             qtd_columns,
-            currencyColumns,
-            decimalColumns,
-            percentageColumns,
-            **kwargs):
+             **kwargs):
             
         self.excel_path = r"C:/Program Files/Microsoft Office/root/Office16/EXCEL.EXE"
         self.generatedSheetPath = generatedSheetPath
         self.qtd_columns = qtd_columns
-        self.currencyColumns = currencyColumns
-        self.decimalColumns = decimalColumns
-        self.percentageColumns = percentageColumns 
+        
         self.integerColumns = kwargs.get("integerColumn")
+        self.currencyColumns = kwargs.get("currencyColumns")
+        self.decimalColumns = kwargs.get("decimalColumns")
+        self.percentageColumns = kwargs.get("percentageColumns")
         
         self.workbook = xlsxwriter.Workbook(self.generatedSheetPath)
         
@@ -37,6 +35,18 @@ class SheetFormatter:
         
         qtd_column = 1
         qtd_row = 1
+        
+        if self.integerColumns == None: 
+            self.integerColumns = [0]
+            
+        if self.currencyColumns == None: 
+            self.currencyColumns = [0]
+            
+        if self.decimalColumns == None: 
+            self.decimalColumns = [0]
+            
+        if self.percentageColumns == None: 
+            self.percentageColumns = [0]
 
         for table_row in data:
             
