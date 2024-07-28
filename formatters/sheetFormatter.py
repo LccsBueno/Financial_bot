@@ -27,17 +27,13 @@ class SheetFormatter:
     
     def sheetGenerator(self, data):
         
-        currency = self.workbook.add_format({'num_format': '\\R$ #,##0.00'})        
-        decimal = self.workbook.add_format({'num_format': '#,##0.00'})        
-        percentage = self.workbook.add_format({'num_format': '0.00,##%'})
+        currency = self.workbook.add_format({'num_format': '\\R$ #,##0.00;-R$ #,##0.00;"-"'})        
+        decimal = self.workbook.add_format({'num_format': '#,##0.00;-#,##0.00;"-"'})        
+        percentage = self.workbook.add_format({'num_format': '0.00,##%;-0.00,##%;"-"'})
         integer = self.workbook.add_format({'num_format': '0'})
         
-        qtd_column = 1
+        qtd_column = 0
         qtd_row = 1
-        print("Aqui")
-        print(self.percentageColumns)
-        print(self.currencyColumns)
-        print(self.decimalColumns)
         
         if self.integerColumns == None: 
             self.integerColumns = [0]
@@ -55,46 +51,47 @@ class SheetFormatter:
             
             for table_data in table_row:
                 
+                
                 if qtd_column == self.qtd_columns:
-                    qtd_column = 1
+                    qtd_column = 0
                     qtd_row+=1
                     
-                else:
-
-                    if qtd_row == 1:
-                        
-                        bold = self.workbook.add_format()
-                        bold.set_bold()
-                        bold.set_font_size(13)
-                        
-                        self.worksheet.autofilter('B2:N2')
-                        
-                        self.worksheet.write(qtd_row, qtd_column, table_data, bold)
 
                     
-                    elif qtd_column in self.currencyColumns and qtd_row >= 2:
-                        print("Entrou aqui")
-                        self.worksheet.write(qtd_row, qtd_column, dt.DataFormatter.formatDataToFloat(table_data), currency)    
+                if qtd_row == 1:
                     
+                    bold = self.workbook.add_format()
+                    bold.set_bold()
+                    bold.set_font_size(13)
                     
-                    elif qtd_column in self.decimalColumns and qtd_row >=2:
-                        self.worksheet.write(qtd_row, qtd_column, dt.DataFormatter.formatDataToFloat(table_data), decimal)    
-                        
+                    self.worksheet.autofilter('A2:'+chr(ord('@')+self.qtd_columns)+'2')
                     
-                    elif qtd_column in self.percentageColumns and qtd_row >= 2:
-                    
-                        self.worksheet.write(qtd_row, qtd_column, dt.DataFormatter.formatDataToPercentage(table_data), percentage)    
+                    self.worksheet.write(qtd_row, qtd_column, table_data, bold)
+
                 
+                elif qtd_column in self.currencyColumns and qtd_row >= 2:
 
-                    elif (qtd_column in self.integerColumns and qtd_row >= 2) and not type(self.integerColumns) == "NoneType": 
+                    self.worksheet.write(qtd_row, qtd_column, table_data, currency)    
                         
-                        self.worksheet.write(qtd_row, qtd_column, dt.DataFormatter.formatDataToInteger(table_data), integer)    
-                        
-                    else:
-                        self.worksheet.write(qtd_row, qtd_column, str(table_data))    
-                        # worksheet.write(qtd_row, qtd_column, cell_format)
+                
+                elif qtd_column in self.decimalColumns and qtd_row >=2:
 
-                    qtd_column+=1
+                    self.worksheet.write(qtd_row, qtd_column, table_data, decimal)   
+                    
+                
+                elif qtd_column in self.percentageColumns and qtd_row >= 2:
+
+                    self.worksheet.write(qtd_row, qtd_column, table_data, percentage)    
+
+                elif (qtd_column in self.integerColumns and qtd_row >= 2) and not type(self.integerColumns) == "NoneType": 
+                    
+                    self.worksheet.write(qtd_row, qtd_column, table_data, integer)    
+                    
+                else:
+                    self.worksheet.write(qtd_row, qtd_column, str(table_data))    
+                    # worksheet.write(qtd_row, qtd_column, cell_format)
+
+                qtd_column+=1
 
 
         try:

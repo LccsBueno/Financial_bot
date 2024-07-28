@@ -1,6 +1,8 @@
 from formatters import sheetFormatter
 from . import webAcess
 import datetime
+import pandas as pd
+import numpy as np
 
 class FiisCollector(webAcess.WebAcess):
     
@@ -31,7 +33,16 @@ class FiisCollector(webAcess.WebAcess):
         decimalColumns = [6]
         percentageColumns = [4, 5, 12, 13]
         integerColumns = [8, 9]
+                        
+        cabecalho = data[0]
+        data.pop(0)
+        df = pd.DataFrame(data)  
         
+        print(df) 
+        
+        array = df.to_numpy()
+        array = np.insert(array, 0, cabecalho, axis=0)
+
         now = datetime.datetime.now()
 
         sht = sheetFormatter.SheetFormatter("./Fiis-"+str(now.month)+"-"+str(now.day)+"-"+str(now.year)+".xlsx",
@@ -68,5 +79,5 @@ class FiisCollector(webAcess.WebAcess):
         #     cont+=1
                     
             
-        sht.sheetGenerator(data)
+        sht.sheetGenerator(array)
     

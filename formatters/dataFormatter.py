@@ -1,4 +1,3 @@
-import xlsxwriter
 
 class DataFormatter:
     
@@ -24,5 +23,6 @@ class DataFormatter:
     def formatDataToString(data):
         string = str(data)
         return string
+
     
     

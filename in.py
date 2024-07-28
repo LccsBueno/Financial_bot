@@ -14,7 +14,7 @@ from MenuOptions import MenuOptions#
 
 sair = False
 
-libsUsadas = ["selenium", "argparse", "xlsxwriter"]
+libsUsadas = ["selenium", "argparse", "xlsxwriter", "pandas", "numpy"]
 
 def checarBiblitecas(bibliotecas):
     for lib in bibliotecas:
