@@ -23,13 +23,27 @@ class SheetFormatter:
         
         self.workbook = xlsxwriter.Workbook(self.generatedSheetPath)
 
-        self.worksheet = self.workbook.add_worksheet("FIIS") 
+        self.worksheet = self.workbook.add_worksheet("Ativos") 
+        
+    def dataHora(self):
+        
+        bold = self.workbook.add_format()
+        bold.set_bold()
+        bold.set_font_size(13)
+        
+        now = datetime.datetime.now()  
+        
+        self.worksheet.write(1, 1, "Data", bold)
+        self.worksheet.write(2, 1, str(now.day)+"/"+str(now.month)+"/"+str(now.year))
+        
+        self.worksheet.write(1, 2, "Hora", bold)
+        self.worksheet.write(2, 2, str(now.hour)+":"+str(now.minute))
     
     def sheetGenerator(self, data):
         
-        currency = self.workbook.add_format({'num_format': '\\R$ #,##0.00;-R$ #,##0.00;"-"'})        
-        decimal = self.workbook.add_format({'num_format': '#,##0.00;-#,##0.00;"-"'})        
-        percentage = self.workbook.add_format({'num_format': '0.00,##%;-0.00,##%;"-"'})
+        currency = self.workbook.add_format({'num_format': '\\R$ #,##0.00;[Red]-R$ #,##0.00;"-"'})        
+        decimal = self.workbook.add_format({'num_format': '#,##0.00;[Red]-#,##0.00;"-"'})        
+        percentage = self.workbook.add_format({'num_format': '0.00,##%;[Red]-0.00,##%;"-"'})
         integer = self.workbook.add_format({'num_format': '0'})
         
         qtd_column = 0
@@ -47,16 +61,15 @@ class SheetFormatter:
         if self.percentageColumns == None: 
             self.percentageColumns = [0]
 
+        self.dataHora()
+        
         for table_row in data:
             
             for table_data in table_row:
                 
-                
                 if qtd_column == self.qtd_columns:
                     qtd_column = 0
                     qtd_row+=1
-                    
-
                     
                 if qtd_row == 1:
                     
@@ -64,31 +77,31 @@ class SheetFormatter:
                     bold.set_bold()
                     bold.set_font_size(13)
                     
-                    self.worksheet.autofilter('A2:'+chr(ord('@')+self.qtd_columns)+'2')
+                    self.worksheet.autofilter('B5:'+chr(ord('@')+self.qtd_columns)+'5')
                     
-                    self.worksheet.write(qtd_row, qtd_column, table_data, bold)
+                    self.worksheet.write(qtd_row+3, qtd_column+1, table_data, bold)
 
                 
                 elif qtd_column in self.currencyColumns and qtd_row >= 2:
 
-                    self.worksheet.write(qtd_row, qtd_column, table_data, currency)    
+                    self.worksheet.write(qtd_row+3, qtd_column+1, table_data, currency)    
                         
                 
                 elif qtd_column in self.decimalColumns and qtd_row >=2:
 
-                    self.worksheet.write(qtd_row, qtd_column, table_data, decimal)   
+                    self.worksheet.write(qtd_row+3, qtd_column+1, table_data, decimal)   
                     
                 
                 elif qtd_column in self.percentageColumns and qtd_row >= 2:
 
-                    self.worksheet.write(qtd_row, qtd_column, table_data, percentage)    
+                    self.worksheet.write(qtd_row+3, qtd_column+1, table_data, percentage)    
 
                 elif (qtd_column in self.integerColumns and qtd_row >= 2) and not type(self.integerColumns) == "NoneType": 
-                    
-                    self.worksheet.write(qtd_row, qtd_column, table_data, integer)    
+
+                    self.worksheet.write(qtd_row+3, qtd_column+1, table_data, integer)    
                     
                 else:
-                    self.worksheet.write(qtd_row, qtd_column, str(table_data))    
+                    self.worksheet.write(qtd_row+3, qtd_column+1, str(table_data))    
                     # worksheet.write(qtd_row, qtd_column, cell_format)
 
                 qtd_column+=1

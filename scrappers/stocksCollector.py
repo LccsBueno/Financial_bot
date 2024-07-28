@@ -59,11 +59,11 @@ class StocksCollector(webAcess.WebAcess):
         
         df[len(data[0])] = df[1] * (df[5] * 100) / 12
                 
-        currencyColumns.append(21)
+        currencyColumns.append(len(data[0]))
                 
         array = df.to_numpy()
         
-        np.set_printoptions(threshold=sys.maxsize)
+        # np.set_printoptions(threshold=sys.maxsize)
         
         cabecalho.append("Dividendo/Mês")
         array = np.insert(array, 0, cabecalho, axis=0)

@@ -29,24 +29,41 @@ class FiisCollector(webAcess.WebAcess):
         
         # ESPERAR UMA ENTRADA DO USUARIO PARA MOSTRAR AS COLUNAS E PEDIR CONFIRMACAO NO TIPO DELAS
         
-        currencyColumns = [3, 7, 10, 11]
-        decimalColumns = [6]
-        percentageColumns = [4, 5, 12, 13]
-        integerColumns = [8, 9]
+        currencyColumns = [2, 6, 9, 10]
+        decimalColumns = [5]
+        percentageColumns = [3, 4, 11, 12]
+        integerColumns = [7, 8]
                         
         cabecalho = data[0]
         data.pop(0)
         df = pd.DataFrame(data)  
+                        
+        for dataFrameColumn in integerColumns:
+            df[dataFrameColumn] = pd.to_numeric(df[dataFrameColumn].str.replace('.', ''), errors='coerce')
         
-        print(df) 
+        for dataFrameColumn in currencyColumns :
+            df[dataFrameColumn] = pd.to_numeric(df[dataFrameColumn].str.replace('.', '').str.replace(',', '.'), errors='coerce')
+        
+        for dataFrameColumn in decimalColumns:
+            df[dataFrameColumn] = pd.to_numeric(df[dataFrameColumn].str.replace('.', '').str.replace(',', '.'), errors='coerce')
+        
+        for dataFrameColumn in percentageColumns:
+            df[dataFrameColumn] = pd.to_numeric(df[dataFrameColumn].str.replace('%', '').str.replace('.', '').str.replace(',', '.'), errors='coerce')
+            df[dataFrameColumn] = df[dataFrameColumn] / 100 
+        
+        df[len(data[0])] = df[2] * df[4] / 12
+                
+        currencyColumns.append(len(data[0]))
         
         array = df.to_numpy()
+        
+        cabecalho.append("Dividendo/Mês")
         array = np.insert(array, 0, cabecalho, axis=0)
 
         now = datetime.datetime.now()
 
         sht = sheetFormatter.SheetFormatter("./Fiis-"+str(now.month)+"-"+str(now.day)+"-"+str(now.year)+".xlsx",
-                                            len(data[0]), 
+                                            len(data[0])+1, 
                                             currencyColumns = currencyColumns,
                                             decimalColumns = decimalColumns,
                                             percentageColumns = percentageColumns,
