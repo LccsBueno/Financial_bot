@@ -16,12 +16,12 @@ class FiisCollector(webAcess.WebAcess):
             var data = [];
             for (var i = 0, row; row = table.rows[i]; i++) {
                 var rowData = [];
-        
-                    for (var j = 0, cell; j < 14; j++) {
 
-                        cell = row.cells[j]
-                        rowData.push(cell.textContent);
-                    }
+                for (var j = 0, cell; j < 14; j++) {
+
+                    cell = row.cells[j]
+                    rowData.push(cell.textContent);
+                }
                  
                 data.push(rowData);
             }
@@ -33,7 +33,9 @@ class FiisCollector(webAcess.WebAcess):
         decimalColumns = [5]
         percentageColumns = [3, 4, 11, 12]
         integerColumns = [7, 8]
-                        
+        
+        dataLength = len(data[0])
+        
         cabecalho = data[0]
         data.pop(0)
         df = pd.DataFrame(data)  
@@ -51,19 +53,37 @@ class FiisCollector(webAcess.WebAcess):
             df[dataFrameColumn] = pd.to_numeric(df[dataFrameColumn].str.replace('%', '').str.replace('.', '').str.replace(',', '.'), errors='coerce')
             df[dataFrameColumn] = df[dataFrameColumn] / 100 
         
-        df[len(data[0])] = df[2] * df[4] / 12
-                
-        currencyColumns.append(len(data[0]))
+        df = df.drop(13, axis='columns')
+        cabecalho.pop(13)
+        dataLength-=1;
         
-        array = df.to_numpy()
+        df = df.drop(df[df[4] == 0].index)
         
+        df[dataLength] = df[2] * df[4] / 12
         cabecalho.append("Dividendo/Mês")
+        currencyColumns.append(dataLength)
+        dataLength+=1
+        
+        df[dataLength] = df[2] / df[13]
+        cabecalho.append("Magic Number")
+        integerColumns.append(dataLength)
+        dataLength+=1
+        
+        df[dataLength] = df[2] * df[14]
+        cabecalho.append("Magic Number (R$)")
+        currencyColumns.append(dataLength)
+        dataLength+=1
+        
+        df[dataLength] = "Resultados"
+        cabecalho.append("Resultados")
+        dataLength+=1
+        
+        print(df)
+        array = df.to_numpy()
         array = np.insert(array, 0, cabecalho, axis=0)
-
-        now = datetime.datetime.now()
-
-        sht = sheetFormatter.SheetFormatter("./Fiis-"+str(now.month)+"-"+str(now.day)+"-"+str(now.year)+".xlsx",
-                                            len(data[0])+1, 
+        
+        sht = sheetFormatter.SheetFormatter("./Fiis.xlsx",
+                                            dataLength, 
                                             currencyColumns = currencyColumns,
                                             decimalColumns = decimalColumns,
                                             percentageColumns = percentageColumns,
@@ -97,4 +117,9 @@ class FiisCollector(webAcess.WebAcess):
                     
             
         sht.sheetGenerator(array)
+    
+    @staticmethod    
+    def getResultados(fii):
+        url = f"https://www.fundamentus.com.br/fii_relatorios.php?papel={fii}"
+        return url
     

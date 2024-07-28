@@ -2,6 +2,8 @@ import xlsxwriter
 import subprocess
 import datetime
 
+from scrappers import fiisCollector as fii
+from scrappers import stocksCollector as stk
 from . import dataFormatter as dt
 
 class SheetFormatter: 
@@ -46,6 +48,8 @@ class SheetFormatter:
         percentage = self.workbook.add_format({'num_format': '0.00,##%;[Red]-0.00,##%;"-"'})
         integer = self.workbook.add_format({'num_format': '0'})
         
+        urlFormat = self.workbook.add_format({'underline': True, 'color': '#2457E8'})
+
         qtd_column = 0
         qtd_row = 1
         
@@ -78,9 +82,7 @@ class SheetFormatter:
                     bold.set_font_size(13)
                     
                     self.worksheet.autofilter('B5:'+chr(ord('@')+self.qtd_columns)+'5')
-                    
                     self.worksheet.write(qtd_row+3, qtd_column+1, table_data, bold)
-
                 
                 elif qtd_column in self.currencyColumns and qtd_row >= 2:
 
@@ -101,11 +103,24 @@ class SheetFormatter:
                     self.worksheet.write(qtd_row+3, qtd_column+1, table_data, integer)    
                     
                 else:
-                    self.worksheet.write(qtd_row+3, qtd_column+1, str(table_data))    
-                    # worksheet.write(qtd_row, qtd_column, cell_format)
+                    
+                    if table_data == "Resultados":
+                        if table_row[0][-1] == "1":
+                            self.worksheet.write_url(qtd_row+3, qtd_column+1, fii.FiisCollector.getResultados(table_row[0]), tip="Click here")
+                            table_data = table_row[0]
+                            self.worksheet.write(qtd_row+3, qtd_column+1, str(table_data), urlFormat)    
+
+                        elif table_row[0][-1] == "4" or table_row[0][-1] == "3" or table_row[0][-1] == "5" or table_row[0][-1] == "6":
+                            self.worksheet.write_url(qtd_row+3, qtd_column+1, stk.StocksCollector.getResultados(table_row[0]), tip="Click here")
+                            table_data = table_row[0]
+                            self.worksheet.write(qtd_row+3, qtd_column+1, str(table_data), urlFormat)    
+                        
+                    else:
+                        self.worksheet.write(qtd_row+3, qtd_column+1, str(table_data))    
+                        # worksheet.write(qtd_row, qtd_column, cell_format)
 
                 qtd_column+=1
-
+                
 
         try:
             self.workbook.close()
